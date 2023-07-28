@@ -1,0 +1,25 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:ws": "nodemon websocket.js",
+    "start:rmq": "nodemon rabbitmqProducer.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.0.0",
+    "amqplib": "^0.10.3",
+    "concurrently": "^8.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7",
+    "ws": "^7.4.4"
+  },
+  "devDependencies": {
+    "prisma": "^5.0.0"
+  }
+}
