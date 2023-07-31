@@ -4,6 +4,14 @@
     box-sizing: border-box;
 }
 
+.badge {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 2rem;
+    color: black;
+}
+
 .center {
     display: flex;
     justify-content: center;
@@ -44,7 +52,10 @@
 
 .connection_message {
     width: 400px;
-    text-align: center;
+    border: 2px solid blue;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
 }
 
 .message {

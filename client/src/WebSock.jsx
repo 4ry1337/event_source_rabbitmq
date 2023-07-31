@@ -1,5 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react';
-import axios from "axios";
 
 const WebSock = () => {
     const [messages, setMessages] = useState([]);
@@ -7,24 +6,50 @@ const WebSock = () => {
     const socket = useRef()
     const [connected, setConnected] = useState(false);
     const [username, setUsername] = useState('')
+    const [checkSpeed, setCheckSpeed] = useState("Finding internet speed")
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+    useEffect(() => {
+        console.log(isOnline)
+
+        function onlineHandler() {
+            setIsOnline(true);
+        }
+
+        function offlineHandler() {
+            setIsOnline(false);
+        }
+
+        window.addEventListener("online", onlineHandler);
+        window.addEventListener("offline", offlineHandler);
+
+
+        return () => {
+            window.removeEventListener("online", onlineHandler);
+            window.removeEventListener("offline", offlineHandler);
+        };
+    });
 
     function connect() {
         socket.current = new WebSocket('ws://localhost:5000')
-
         socket.current.onopen = () => {
             setConnected(true)
             const message = {
                 event: 'connection',
-                username,
-                id: Date.now()
+                from: username,
+                message: `${username} connected`
             }
             socket.current.send(JSON.stringify(message))
         }
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data)
+            if (message.event === 'connection') {
+                setMessages(message.messages.reverse())
+                return
+            }
             setMessages(prev => [message, ...prev])
         }
-        socket.current.onclose= () => {
+        socket.current.onclose = () => {
             console.log('Socket закрыт')
         }
         socket.current.onerror = () => {
@@ -34,9 +59,8 @@ const WebSock = () => {
 
     const sendMessage = async () => {
         const message = {
-            username,
+            from: username,
             message: value,
-            id: Date.now(),
             event: 'message'
         }
         socket.current.send(JSON.stringify(message));
@@ -68,14 +92,14 @@ const WebSock = () => {
                     <button onClick={sendMessage}>Отправить</button>
                 </div>
                 <div className="messages">
-                    {messages.map(mess =>
+                    {messages.map((mess, index) =>
                         <div key={mess.id}>
                             {mess.event === 'connection'
                                 ? <div className="connection_message">
-                                    Пользователь {mess.username} подключился
+                                    Пользователь {mess.from} подключился
                                 </div>
                                 : <div className="message">
-                                    {mess.username}. {mess.message}
+                                    {mess.from}: {mess.message}
                                 </div>
                             }
                         </div>
